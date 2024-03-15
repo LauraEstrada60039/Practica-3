@@ -1,4 +1,4 @@
-from sklearn.feature_extraction.text import CountVectorizerThe
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 
