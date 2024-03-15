@@ -8,7 +8,7 @@ def vectorize_frequency(corpus, ngram_len):
     Vectorizes the given corpus using a frequency-based approach.
 
     Parameters:
-    corpus (list): A list of strings representing the corpus to be vectorized.
+    corpus (list): a pandas dataFrame representing the corpus to be vectorized.
     ngram_len (int): The length of the n-grams to be considered.
 
     Returns:
@@ -17,14 +17,14 @@ def vectorize_frequency(corpus, ngram_len):
 
     # Load the vectorizer if it exists
     try:
-        with open('freq_vectorizer.pkl', 'rb') as f:
+        with open('freq_vectorizer.pkl', 'rb') as t:
             vectorizer = pickle.load(f)
     except:
         vectorizer = CountVectorizer(ngram_range=(1, ngram_len))
         vectorizer.fit(corpus)
         with open('freq_vectorizer.pkl', 'wb') as f:
             pickle.dump(vectorizer, f)
-    return vectorizer.transform(corpus)
+    return vectorizer.fit_transform(corpus)
 
 
 def vectorize_binary(corpus, ngram):
@@ -32,7 +32,7 @@ def vectorize_binary(corpus, ngram):
     Vectorizes the given corpus using a binary vectorizer.
 
     Parameters:
-    corpus (list): A list of strings representing the corpus to be vectorized.
+    corpus (list): a pandas dataFrame representing the corpus to be vectorized.
     ngram (int): The maximum size of the n-grams to be considered.
 
     Returns:
@@ -40,14 +40,14 @@ def vectorize_binary(corpus, ngram):
     """
     # Load the vectorizer if it exists
     try:
-        with open('binary_vectorizer.pkl', 'rb') as f:
+        with open('binary_vectorizer.pkl', 'rb') as t:
             vectorizer = pickle.load(f)
     except:
-        vectorizer = CountVectorizer(ngram_range=(1, ngram), binary=True)
-        vectorizer.fit(corpus)
+        vectorizer = CountVectorizer(ngram_range=(ngram,ngram), binary=True)
+        vectorizer.fit_transform(corpus)
         with open('binary_vectorizer.pkl', 'wb') as f:
             pickle.dump(vectorizer, f)
-    return vectorizer.transform(corpus)
+    return vectorizer.fit_transform(corpus)
 
 
 def vectorize_tfidf(corpus, ngram):
@@ -55,7 +55,7 @@ def vectorize_tfidf(corpus, ngram):
     Vectorizes the given corpus using TF-IDF representation.
 
     Parameters:
-    corpus (list): A list of strings representing the corpus to be vectorized.
+    corpus (list): a pandas dataFrame representing the corpus to be vectorized.
     ngram (int): The maximum number of consecutive words to consider as a single feature.
 
     Returns:
@@ -63,14 +63,14 @@ def vectorize_tfidf(corpus, ngram):
     """
     # Load the vectorizer if it exists
     try:
-        with open('tfidf_vectorizer.pkl', 'rb') as f:
+        with open('tfidf_vectorizer.pkl', 'rb') as t:
             vectorizer = pickle.load(f)
     except:
         vectorizer = TfidfVectorizer(ngram_range=(1, ngram))
         vectorizer.fit(corpus)
         with open('tfidf_vectorizer.pkl', 'wb') as f:
             pickle.dump(vectorizer, f)
-    return vectorizer.transform(corpus)
+    return vectorizer.fit_transform(corpus)
 
 
 def vectorize(type:str, corpus:str, ngram_len:int):
