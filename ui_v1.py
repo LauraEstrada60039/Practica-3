@@ -107,6 +107,25 @@ def update_selects_options(key, value, selects_options):
     selects_options[key] = value
     print("selects_options:", selects_options)
 
+def calculate_and_print_data(file_paths, selected_options_representation):
+    """Función para calcular y mostrar los datos recopilados."""
+    information_calculate = {}
+
+    # Combinar los diccionarios en uno solo
+    information_calculate.update(file_paths)
+
+    # Verificar si selected_options_representation es un diccionario válido
+    if isinstance(selected_options_representation, dict):
+        information_calculate.update(selected_options_representation)
+    else:
+        print("Error: selected_options_representation no es un diccionario válido")
+
+    print("Datos combinados para el cálculo:")
+    for key, value in information_calculate.items():
+        print(f"{key}: {value}")
+
+    
+
 def main():
     # Diccionario para almacenar las rutas de los archivos cargados
     file_paths = {}
@@ -233,8 +252,12 @@ def main():
     def exit_application():
         MyWindow.destroy()
 
+    # Botón para calcular y mostrar los datos
+    button_calculate = Tk.Button(sidebar_content_frame, font=("Verdana", 8, "bold"), bg="#9CA475", text="Calcular", command=lambda: calculate_and_print_data(file_paths, selects_options))
+    button_calculate.grid(row=16, column=0, sticky="nsew", padx=10, pady=5)
+
     button_exit = Tk.Button(sidebar_content_frame, font=("Verdana", 8, "bold"), bg="#9CA475", text="Terminar", command=exit_application)
-    button_exit.grid(row=16, column=0, sticky="nsew", padx=10, pady=10, columnspan=2)
+    button_exit.grid(row=17, column=0, sticky="nsew", padx=10, pady=5)
 
     ############################################## Fin del Sidebar ##############################################
 
