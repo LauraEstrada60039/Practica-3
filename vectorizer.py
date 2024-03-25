@@ -16,15 +16,26 @@ def vectorize_frequency(corpus, ngram_len):
     """
 
     # Load the vectorizer if it exists
-    try:
-        with open('freq_vectorizer.pkl', 'rb') as t:
-            vectorizer = pickle.load(f)
-    except:
-        vectorizer = CountVectorizer(ngram_range=(1, ngram_len))
-        vectorizer.fit(corpus)
-        with open('freq_vectorizer.pkl', 'wb') as f:
-            pickle.dump(vectorizer, f)
-    return vectorizer.fit_transform(corpus)
+    if(ngram_len == 1):
+        try:
+            with open('freq_vectorizer.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = CountVectorizer(ngram_range=(ngram_len, ngram_len))
+            vectorizer.fit(corpus)
+            with open('freq_vectorizer.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
+    elif(ngram_len == 2):
+        try:
+            with open('freq_vectorizer_2.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = CountVectorizer(ngram_range=(ngram_len, ngram_len))
+            vectorizer.fit(corpus)
+            with open('freq_vectorizer_2.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
 
 
 def vectorize_binary(corpus, ngram):
@@ -39,15 +50,26 @@ def vectorize_binary(corpus, ngram):
     scipy.sparse.csr_matrix: The binary vectorized representation of the corpus.
     """
     # Load the vectorizer if it exists
-    try:
-        with open('binary_vectorizer.pkl', 'rb') as t:
-            vectorizer = pickle.load(f)
-    except:
-        vectorizer = CountVectorizer(ngram_range=(ngram,ngram), binary=True)
-        vectorizer.fit_transform(corpus)
-        with open('binary_vectorizer.pkl', 'wb') as f:
-            pickle.dump(vectorizer, f)
-    return vectorizer.fit_transform(corpus)
+    if(ngram == 1):
+        try:
+            with open('binary_vectorizer.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = CountVectorizer(ngram_range=(ngram,ngram), binary=True)
+            vectorizer.fit_transform(corpus)
+            with open('binary_vectorizer.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
+    elif(ngram == 2):
+        try:
+            with open('binary_vectorizer_2.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = CountVectorizer(ngram_range=(ngram,ngram), binary=True)
+            vectorizer.fit_transform(corpus)
+            with open('binary_vectorizer_2.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
 
 
 def vectorize_tfidf(corpus, ngram):
@@ -62,15 +84,27 @@ def vectorize_tfidf(corpus, ngram):
     scipy.sparse.csr_matrix: The TF-IDF representation of the input corpus.
     """
     # Load the vectorizer if it exists
-    try:
-        with open('tfidf_vectorizer.pkl', 'rb') as t:
-            vectorizer = pickle.load(f)
-    except:
-        vectorizer = TfidfVectorizer(ngram_range=(1, ngram))
-        vectorizer.fit(corpus)
-        with open('tfidf_vectorizer.pkl', 'wb') as f:
-            pickle.dump(vectorizer, f)
-    return vectorizer.fit_transform(corpus)
+    if(ngram == 1):
+        try:
+            with open('tfidf_vectorizer_1.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = TfidfVectorizer(ngram_range=(1, ngram))
+            vectorizer.fit(corpus)
+            with open('tfidf_vectorizer_1.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
+    elif(ngram == 2):
+        try:
+            with open('tfidf_vectorizer_2.pkl', 'rb') as f:
+                vectorizer = pickle.load(f)
+        except:
+            vectorizer = TfidfVectorizer(ngram_range=(1, ngram))
+            vectorizer.fit(corpus)
+            with open('tfidf_vectorizer_2.pkl', 'wb') as f:
+                pickle.dump(vectorizer, f)
+        return vectorizer.fit_transform(corpus), vectorizer
+
 
 
 def vectorize(type:str, corpus:str, ngram_len:int):
@@ -88,6 +122,7 @@ def vectorize(type:str, corpus:str, ngram_len:int):
     Raises:
     - ValueError: If an invalid type is specified.
     """
+    corpus = corpus.dropna()
     if type == 'frequency':
         return vectorize_frequency(corpus,ngram_len)
     elif type == 'binary':

@@ -3,7 +3,10 @@ import numpy as np
 import pandas as pd
 from vectorizer import vectorize
 import similarity
-from similarity import find_all_cos, get_top_n
+from similarity import find_all_cos #, get_top_n
+from normalizer import normalize_text
+np.set_printoptions(precision=15, suppress=True, threshold=np.inf, linewidth=np.inf)
+
 def load_corpus(file_name):
     """
     Loads the corpus from the given file.
@@ -52,9 +55,9 @@ def vectorize_selection(titles, contents, ngrams, test_type, representation):
         test_corpus = contents
     else: #it concatenates the titles and contents in a single string
         test_corpus = titles + ' ' + contents
-        
+    vect, vectorizer = vectorize(representation, test_corpus, ngrams)
     #it makes the vectorzation of the corpus and 
-    return vectorize(representation, test_corpus, ngrams).toarray() #it returns the vectorized representation of the corpus
+    return  vect.toarray(), vectorizer#it returns the vectorized representation of the corpus
 
 
 def main():
@@ -69,23 +72,40 @@ def main():
     ngrams = [1, 2]
     
     #Given a new o a set of new documents, it vectorizes the documents and finds the most similar documents in the corpus. Using all combinations of the given parameters.
-    new_entry = {"titles": "Ciegos y débiles visuales viven experiencia sensorial en torno al fenómeno de abril",
-                 "contents": "Mazatlán, Sin., Las comunidades ciega y débil visual recibieron capacitación para percibir a través del tacto el eclipse solar total, que se observará el 8 de abril, en un taller impartido por el astrofísico Mario De Leo Winkler, director de comunicación del Conocimiento de la Universidad Autónoma Metropolitana (UAM).", 
-                 "both": "Ciegos y débiles visuales viven experiencia sensorial en torno al fenómeno de abril Mazatlán, Sin., Las comunidades ciega y débil visual recibieron capacitación para percibir a través del tacto el eclipse solar total, que se observará el 8 de abril, en un taller impartido por el astrofísico Mario De Leo Winkler, director de comunicación del Conocimiento de la Universidad Autónoma Metropolitana (UAM)."}
+    new_entry = {"inversion de contenido":"Durante el año pasado, los mexicanos invirtieron 6 mil 429 millones de dólares en proyectos de largo plazo en el extranjero. Ese monto –principalmente destinado a la ampliación de operaciones de empresas nacionales en América Latina, España, Francia, Alemania y Estados Unidos– representa una caída de más de 50 por ciento a tasa anual, revelan datos oficiales"}
+    
+    new_entry["inversion de contenido"] = normalize_text(new_entry["inversion de contenido"])
+
     
     all_test = []
-    for t in test_type:
+    all_similarities = []
+    for t in new_entry:
         for r in representation:
             for n in ngrams:
                 
-                vec = vectorize_selection(titles, contents, n, t, r)
-                #vectorize new entry but keeping the same representation (Same vector) as the vocabulary in the corpus (titles ans contents)
+                vec, vectorizer = vectorize_selection(titles, contents, n, t, r)
+                #vectorizes new entry but keeping the same representation (Same vector) as the vocabulary in the corpus (titles ans contents)
+
+                new_vec = vectorizer.transform([new_entry[t]]).toarray()
+                #dump new_vec and vec into a file                
+                all_cosines = find_all_cos(new_vec,vec)
+
+                all_cosines_indexed = [(i, all_cosines[i]) for i in range(len(all_cosines))]
+                all_cosines_indexed.sort(key=lambda x: x[1], reverse=True)
+
+                #get_top_n Returns index and value
+                get_top_n = lambda x, n: [x[i] for i in range(n)]
+                top_n = get_top_n(all_cosines_indexed, 10)
                 
-                all_test.append([[t, r, n, i] for i in all_similarities])
+                results = f"Test type: {t}, Representation: {r}, Ngram: {n}, Top 5 similar documents: {top_n}"
                 
+                print(results)
                 
-                print("\n")
-    print(all_test)
+            
+    
+               # print(f"Test type: {t}, Representation: {r}, Ngram: {n}, Top 5 similar documents: {top_n}")
+                
+   
     
    
    
