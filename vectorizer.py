@@ -18,12 +18,12 @@ def vectorize_frequency(corpus, ngram_len):
     # Load the vectorizer if it exists
     if(ngram_len == 1):
         try:
-            with open('freq_vectorizer.pkl', 'rb') as f:
+            with open('freq_vectorizer_1.pkl', 'rb') as f:
                 vectorizer = pickle.load(f)
         except:
             vectorizer = CountVectorizer(ngram_range=(ngram_len, ngram_len))
             vectorizer.fit(corpus)
-            with open('freq_vectorizer.pkl', 'wb') as f:
+            with open('freq_vectorizer_1.pkl', 'wb') as f:
                 pickle.dump(vectorizer, f)
         return vectorizer.fit_transform(corpus), vectorizer
     elif(ngram_len == 2):
@@ -52,12 +52,12 @@ def vectorize_binary(corpus, ngram):
     # Load the vectorizer if it exists
     if(ngram == 1):
         try:
-            with open('binary_vectorizer.pkl', 'rb') as f:
+            with open('binary_vectorizer_1.pkl', 'rb') as f:
                 vectorizer = pickle.load(f)
         except:
             vectorizer = CountVectorizer(ngram_range=(ngram,ngram), binary=True)
             vectorizer.fit_transform(corpus)
-            with open('binary_vectorizer.pkl', 'wb') as f:
+            with open('binary_vectorizer_1.pkl', 'wb') as f:
                 pickle.dump(vectorizer, f)
         return vectorizer.fit_transform(corpus), vectorizer
     elif(ngram == 2):

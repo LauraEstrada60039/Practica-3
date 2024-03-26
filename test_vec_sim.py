@@ -59,7 +59,48 @@ def vectorize_selection(titles, contents, ngrams, test_type, representation):
     #it makes the vectorzation of the corpus and 
     return  vect.toarray(), vectorizer#it returns the vectorized representation of the corpus
 
+def get_table(corpus='corpus.csv', new_entry=None, ngrams=[1], representation=["binary"],top=5):
+    # Load the corpus
+    corpus = load_corpus('corpus.csv') #into a dataframe
 
+    titles = pick_columns(corpus, 1)
+    contents = pick_columns(corpus, 2)    
+    all_test = []
+    all_similarities = []
+    for t in new_entry:
+        for r in representation:
+            for n in ngrams:
+                
+                vec, vectorizer = vectorize_selection(titles, contents, n, t, r)
+                #vectorizes new entry but keeping the same representation (Same vector) as the vocabulary in the corpus (titles ans contents)
+
+                new_vec = vectorizer.transform([new_entry[t]]).toarray()
+                #dump new_vec and vec into a file                
+                all_cosines = find_all_cos(new_vec,vec)
+
+                all_cosines_indexed = [(i, all_cosines[i]) for i in range(len(all_cosines))]
+                all_cosines_indexed.sort(key=lambda x: x[1], reverse=True)
+
+                #get_top_n Returns index and value
+                get_top_n = lambda x, n: [x[i] for i in range(n)]
+                top_n = get_top_n(all_cosines_indexed, 5)
+                
+                all_test.append([t, r, n, top_n])   
+   #uses all_test to create a html table with the results
+    html = "<html><head><title>Test Results</title></head><body><table><tr><th>Test Type</th><th>Representation</th><th>Ngram</th><th>Top 5 similar documents</th></tr>"
+    for test in all_test:
+        test[3] = [f'{i[0]}: {i[1][0]}' for i in test[3]]
+        test[3] = '<br>'.join(test[3])  
+        html += f"<tr><td>{test[0]}</td><td>{test[1]}</td><td>{test[2]}</td><td>{test[3]}</td></tr>"
+    html += "</table></body></html>"
+
+    return html
+    #Para poner el resultado en un archivo
+    #with open('test_results.html', 'w') as f:
+    #    f.write(html)
+    
+#Test main
+'''  
 def main():
     # Load the corpus
     corpus = load_corpus('corpus.csv') #into a dataframe
@@ -95,25 +136,34 @@ def main():
 
                 #get_top_n Returns index and value
                 get_top_n = lambda x, n: [x[i] for i in range(n)]
-                top_n = get_top_n(all_cosines_indexed, 10)
+                top_n = get_top_n(all_cosines_indexed, 5)
                 
-                results = f"Test type: {t}, Representation: {r}, Ngram: {n}, Top 5 similar documents: {top_n}"
-                
-                print(results)
+                all_test.append([t, r, n, top_n])
                 
             
     
                # print(f"Test type: {t}, Representation: {r}, Ngram: {n}, Top 5 similar documents: {top_n}")
                 
+   #uses all_test to create a html table with the results
+    html = "<html><head><title>Test Results</title></head><body><table><tr><th>Test Type</th><th>Representation</th><th>Ngram</th><th>Top 5 similar documents</th></tr>"
+    for test in all_test:
+        test[3] = [f'{i[0]}: {i[1][0]}' for i in test[3]]
+        test[3] = '<br>'.join(test[3])  
+        html += f"<tr><td>{test[0]}</td><td>{test[1]}</td><td>{test[2]}</td><td>{test[3]}</td></tr>"
+    html += "</table></body></html>"
    
-    
-   
-   
-    
-    
+    with open('test_results.html', 'w') as f:
+        f.write(html)
 
-    
+    #print(all_test)
+    #print(all_similarities)
+    #print(all_cosines_indexed)
+    #print(top_n)
+    #print(new_vec)
+    #print(vec)
+    #print(vectorizer)   
 
 
 if __name__ == "__main__":
     main()
+'''
