@@ -60,6 +60,17 @@ def vectorize_selection(titles, contents, ngrams, test_type, representation):
     return  vect.toarray(), vectorizer#it returns the vectorized representation of the corpus
 
 def get_table(corpus='corpus.csv', new_entry=None, ngrams=[1], representation=["binary"],top=5):
+    '''
+    Given a new o a set of new documents, it vectorizes the documents and finds the most similar documents in the corpus. Using all combinations of the given parameters.
+    Parameters:
+        corpus (str): The name of the file containing the corpus.
+        new_entry (dict): A dictionary containing the new documents to be compared.
+        ngrams (list): The range of ngrams to be used.
+        representation (list): The representation to be used. Binary, frequency or tfidf.
+        top (int): The number of top similar documents to be returned.
+    Returns:
+        str: A string containing the html table with the results.
+    '''
     # Load the corpus
     corpus = load_corpus('corpus.csv') #into a dataframe
 
@@ -161,7 +172,7 @@ def main():
     #print(top_n)
     #print(new_vec)
     #print(vec)
-    #print(vectorizer)   
+    #print(vectorizer)  
 
 
 if __name__ == "__main__":
